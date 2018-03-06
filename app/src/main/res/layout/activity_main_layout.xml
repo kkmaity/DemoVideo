@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/defaultConfiguration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/default_configuration" />
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/photoConfiguration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/photo_configuration" />
+
+    <Button
+        android:visibility="gone"
+
+        android:id="@+id/videoConfiguration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/video_configuration" />
+
+    <Button
+        android:id="@+id/videoLimitedConfiguration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Upload video" />
+
+    <Button
+        android:visibility="gone"
+
+        android:id="@+id/universalConfiguration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/universal_configuration" />
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/dialogDemo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/using_within_dialog" />
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/customDemo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/custom_camera_layout" />
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/squareDemo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/square_camera_layout" />
+
+    <TextView
+        android:id="@+id/picture_download_uri"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoLink="web"
+       android:textColor="#fff"
+        android:textSize="18sp"/>
+    <Button
+        android:id="@+id/streaming_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Streaming video" />
+
+</LinearLayout>
