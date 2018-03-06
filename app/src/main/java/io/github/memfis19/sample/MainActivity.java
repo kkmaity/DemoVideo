@@ -164,6 +164,14 @@ public class MainActivity extends AppCompatActivity {
 
 
                     break;
+                case R.id.uploaded_video:
+
+                        Intent intent = new Intent(MainActivity.this, io.github.memfis19.sample.videostreamtutorial.MainActivity.class);
+                        startActivity(intent);
+                        finish();
+
+
+                    break;
             }
         }
     };
@@ -353,6 +361,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.photoConfiguration).setOnClickListener(onClickListener);
         findViewById(R.id.videoConfiguration).setOnClickListener(onClickListener);
         findViewById(R.id.videoLimitedConfiguration).setOnClickListener(onClickListener);
+        findViewById(R.id.uploaded_video).setOnClickListener(onClickListener);
         findViewById(R.id.universalConfiguration).setOnClickListener(onClickListener);
         findViewById(R.id.dialogDemo).setOnClickListener(onClickListener);
         findViewById(R.id.customDemo).setOnClickListener(onClickListener);

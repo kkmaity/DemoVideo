@@ -83,5 +83,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:text="Streaming video" />
+    <Button
+        android:id="@+id/uploaded_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Uploaded video" />
 
 </LinearLayout>

@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
 
 
 		mDatabase = FirebaseDatabase.getInstance().getReference();
-		VideoURL=getIntent().getExtras().getString("url");
+		//VideoURL=getIntent().getExtras().getString("url");
 
 		// Find your VideoView in your video_main.xml layout
 		//videoview = (VideoView) findViewById(R.id.VideoView);
