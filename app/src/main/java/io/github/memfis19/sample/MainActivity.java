@@ -8,18 +8,31 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,15 +41,21 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.malmstein.fenster.controller.FensterPlayerControllerVisibilityListener;
+import com.malmstein.fenster.controller.SimpleMediaFensterPlayerController;
+import com.malmstein.fenster.view.FensterVideoView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.github.memfis19.annca.Annca;
 import io.github.memfis19.annca.internal.configuration.AnncaConfiguration;
 import io.github.memfis19.sample.firbase.MyDownloadService;
 import io.github.memfis19.sample.firbase.MyUploadService;
+import io.github.memfis19.sample.videostreamtutorial.MoviesAdapterA;
 import io.github.memfis19.sample.videostreamtutorial.VideoData;
 
 
@@ -44,7 +63,7 @@ import io.github.memfis19.sample.videostreamtutorial.VideoData;
  * Created by memfis on 11/8/16.
  */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FensterPlayerControllerVisibilityListener {
 
     private BroadcastReceiver mBroadcastReceiver;
     private ProgressDialog mProgressDialog;
@@ -59,14 +78,97 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference mFirebaseDatabase;
     private String userId;
     private String eventType="A";
+    private FloatingActionButton fab;
+    private String base64Thumnail = "";
+    private ProgressBar progressbar;
+    private LinearLayout ll_main;
+    private TextView txt;
+    private View view;
+    private Uri uri;
+    private MoviesAdapterA moviesAdapterA,moviesAdapterB,moviesAdapterC,moviesAdapterD;
+    RecyclerView rvA;
+    RecyclerView rvB;
+    RecyclerView rvC ;
+    RecyclerView rvD;
+    private TextView noA,noB,noC,noD;
+
+
+
+    private String VideoURL = "http://www.androidbegin.com/tutorial/AndroidCommercial.3gp";
+    // Declare some variables
+    private ProgressDialog pDialog;
+    //VideoView videoview;
+    private FensterVideoView textureView;
+    private SimpleMediaFensterPlayerController fullScreenMediaPlayerController;
+    private DatabaseReference mDatabase;
+   // private FirebaseDatabase mFirebaseInstance;
+   // private DatabaseReference mFirebaseDatabase;
+    List<VideoData> typeA=new ArrayList<>();
+    List<VideoData> typeB=new ArrayList<>();
+    List<VideoData> typeC=new ArrayList<>();
+    List<VideoData> typeD=new ArrayList<>();
+    private  List<VideoData> list = new ArrayList<VideoData>();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main_layout);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mFirebaseInstance = FirebaseDatabase.getInstance();
         textView = (TextView) findViewById(R.id.picture_download_uri);
+        noA = (TextView) findViewById(R.id.noA);
+        noB = (TextView) findViewById(R.id.noB);
+        noC = (TextView) findViewById(R.id.noC);
+        noD = (TextView) findViewById(R.id.noD);
+        noA.setVisibility(View.GONE);
+        noB.setVisibility(View.GONE);
+        noC.setVisibility(View.GONE);
+        noD.setVisibility(View.GONE);
+        progressbar = (ProgressBar) findViewById(R.id.progressbar);
+        ll_main = (LinearLayout) findViewById(R.id.ll_main);
+        view = ll_main;
+        ll_main.setVisibility(View.GONE);
+        txt = (TextView) findViewById(R.id.txt);
+        txt.setVisibility(View.GONE);
+        progressbar.setVisibility(View.GONE);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(onClickListener);
         textView.setVisibility(View.GONE);
+         rvA = (RecyclerView) findViewById(R.id.rvA);
+         rvB = (RecyclerView) findViewById(R.id.rvB);
+         rvC = (RecyclerView) findViewById(R.id.rvC);
+         rvD = (RecyclerView) findViewById(R.id.rvD);
+        GridLayoutManager managerA = new GridLayoutManager(this,2, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager managerB = new GridLayoutManager(this,2, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager managerC = new GridLayoutManager(this,2, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager managerD = new GridLayoutManager(this,2, LinearLayoutManager.VERTICAL, false);
+
+        RecyclerView.LayoutManager mLayoutManagerA = new LinearLayoutManager(getApplicationContext());
+        rvA.setLayoutManager(managerA);
+        rvA.setItemAnimator(new DefaultItemAnimator());
+
+        RecyclerView.LayoutManager mLayoutManagerB = new LinearLayoutManager(getApplicationContext());
+        rvB.setLayoutManager(managerB);
+        rvB.setItemAnimator(new DefaultItemAnimator());
+
+        RecyclerView.LayoutManager mLayoutManagerC = new LinearLayoutManager(getApplicationContext());
+        rvC.setLayoutManager(managerC);
+        rvC.setItemAnimator(new DefaultItemAnimator());
+
+
+        rvD.setLayoutManager(managerD);
+        rvD.setItemAnimator(new DefaultItemAnimator());
+
+
+        moviesAdapterA = new MoviesAdapterA(this,typeA);
+        moviesAdapterB = new MoviesAdapterA(this,typeB);
+        moviesAdapterC = new MoviesAdapterA(this,typeC);
+        moviesAdapterD = new MoviesAdapterA(this,typeD);
+        rvA.setAdapter(moviesAdapterA);
+        rvB.setAdapter(moviesAdapterB);
+        rvC.setAdapter(moviesAdapterC);
+        rvD.setAdapter(moviesAdapterD);
 
         activity = this;
 
@@ -89,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         mBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                hideProgressDialog();
+               // hideProgressDialog();
                 switch (intent.getAction()) {
                     case MyUploadService.UPLOAD_COMPLETED:
                     case MyUploadService.UPLOAD_ERROR:
@@ -98,14 +200,119 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+
+        progressbar.setVisibility(View.VISIBLE);
+        mFirebaseDatabase = mFirebaseInstance.getReference("videos");
+        mFirebaseInstance.getReference("videos").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Log.e(TAG, "App title updated");
+				/*GenericTypeIndicator<Map<String, VideoData>> t = new GenericTypeIndicator<Map<String, VideoData>>() {};
+				Map<String, VideoData> map = dataSnapshot.getValue(t);
+				System.out.println("!!!!!!!!!!!!!!!"+map.size());*/
+
+                list.clear();
+                typeA.clear();
+                typeB.clear();
+                typeC.clear();
+                typeD.clear();
+                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    list.add(child.getValue(VideoData.class));
+                }
+
+                for (int i=0;i<list.size();i++){
+                    if (list.get(i).type.equalsIgnoreCase("A")) {
+                        typeA.add(list.get(i));
+                    }
+                    else if (list.get(i).type.equalsIgnoreCase("B")){
+                        typeB.add(list.get(i));
+                    }else if (list.get(i).type.equalsIgnoreCase("C")){
+                        typeC.add(list.get(i));
+                    }else if (list.get(i).type.equalsIgnoreCase("D")){
+                        typeD.add(list.get(i));
+                    }
+                }
+
+                if(list.size() == 0){
+                    txt.setVisibility(View.VISIBLE);
+                    ll_main.setVisibility(View.GONE);
+                }else{
+                    txt.setVisibility(View.GONE);
+                    ll_main.setVisibility(View.VISIBLE);
+
+                    if(typeA.size()>0){
+                       noA.setVisibility(View.GONE);
+                    }else{
+                        noA.setVisibility(View.VISIBLE);
+                    }
+
+                    if(typeB.size()>0){
+                        noB.setVisibility(View.GONE);
+                    }else{
+                        noB.setVisibility(View.VISIBLE);
+                    }
+
+                    if(typeC.size()>0){
+                        noC.setVisibility(View.GONE);
+                    }else{
+                        noC.setVisibility(View.VISIBLE);
+                    }
+
+                    if(typeD.size()>0){
+                        noD.setVisibility(View.GONE);
+                    }else{
+                        noD.setVisibility(View.VISIBLE);
+                    }
+                }
+                init();
+
+                System.out.println("!!!!!!!!!kk!!!!!!"+list.size());
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                progressbar.setVisibility(View.GONE);
+                // Failed to read value
+                //	Log.e(TAG, "Failed to read app title value.", error.toException());
+            }
+        });
+        //bindViews();
+        //initVideo();
     }
+
+    private void init() {
+        moviesAdapterA.notifyDataSetChanged();
+        moviesAdapterB.notifyDataSetChanged();
+        moviesAdapterC.notifyDataSetChanged();
+        moviesAdapterD.notifyDataSetChanged();
+       /* RecyclerView rvA = (RecyclerView) findViewById(R.id.rvA);
+        RecyclerView rvB = (RecyclerView) findViewById(R.id.rvB);
+        RecyclerView rvC = (RecyclerView) findViewById(R.id.rvC);
+        RecyclerView rvD = (RecyclerView) findViewById(R.id.rvD);
+*/
+
+
+
+
+
+
+        rvA.setAdapter(new MoviesAdapterA(this,typeA));
+        rvB.setAdapter(new MoviesAdapterA(this,typeB));
+        rvC.setAdapter(new MoviesAdapterA(this,typeC));
+        rvD.setAdapter(new MoviesAdapterA(this,typeD));
+        progressbar.setVisibility(View.GONE);
+      //  ll_main.setVisibility(View.VISIBLE);
+
+    }
+
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
         // Check if this Activity was launched by clicking on an upload notification
         if (intent.hasExtra(MyUploadService.EXTRA_DOWNLOAD_URL)) {
-            onUploadResultIntent(intent);
+           // onUploadResultIntent(intent);
         }
 
     }
@@ -133,17 +340,20 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
-
+                case R.id.fab:
                 case R.id.videoLimitedConfiguration:
-
-                    getEvent();
-
-
+                    base64Thumnail = "";
+                   // getEvent();
+                    /*registerForContextMenu(view);
+                    openContextMenu(view);
+                    unregisterForContextMenu(view);
+*/
+                    callRecorder();
 
 
 
                     break;
-                case R.id.streaming_video:
+               /* case R.id.streaming_video:
                     if(textView.getText().toString().trim().length()>0) {
 
 
@@ -163,12 +373,12 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                    break;
+                    break;*/
                 case R.id.uploaded_video:
 
-                        Intent intent = new Intent(MainActivity.this, io.github.memfis19.sample.videostreamtutorial.MainActivity.class);
+                        /*Intent intent = new Intent(MainActivity.this, io.github.memfis19.sample.videostreamtutorial.MainActivity.class);
                         startActivity(intent);
-                        finish();
+                        finish();*/
 
 
                     break;
@@ -176,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void getEvent() {
+/*    private void getEvent() {
         final Dialog dialog = new Dialog(MainActivity.this);
         // Include dialog.xml file
         dialog.setTitle("Select the Event");
@@ -230,6 +440,41 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }*/
+
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        menu.setHeaderTitle("Select Event");
+        inflater.inflate(R.menu.menu, menu);
+    }
+
+    public boolean onContextItemSelected(MenuItem item) {
+        //find out which menu item was pressed
+        switch (item.getItemId()) {
+            case R.id.option1:
+                eventType="A";
+                uploadFromUri(uri);
+               // doOptionOne();
+                return true;
+            case R.id.option2:
+                eventType="B";
+                uploadFromUri(uri);
+                //doOptionTwo();
+                return true;
+            case R.id.option3:
+                eventType="C";
+                uploadFromUri(uri);
+                //doOptionTwo();
+                return true;
+            case R.id.option4:
+                eventType="D";
+                uploadFromUri(uri);
+                //doOptionTwo();
+                return true;
+            default:
+                return false;
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -244,7 +489,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void loadDataInFirebase(String trim) {
+    private void loadDataInFirebase(String vPath) {
 
         mFirebaseInstance = FirebaseDatabase.getInstance();
 
@@ -253,7 +498,7 @@ public class MainActivity extends AppCompatActivity {
 
         // store app title to 'app_title' node
         mFirebaseInstance.getReference("app_title").setValue("Realtime Database");
-        createUser(eventType,trim);
+        createUser(eventType,vPath);
         // app_title change listener
         mFirebaseInstance.getReference("app_title").addValueEventListener(new ValueEventListener() {
             @Override
@@ -286,9 +531,10 @@ public class MainActivity extends AppCompatActivity {
             userId = mFirebaseDatabase.push().getKey();
         }
 
-        VideoData user = new VideoData(type, url);
+        VideoData user = new VideoData(type, url, base64Thumnail);
 
         mFirebaseDatabase.child(userId).setValue(user);
+        Toast.makeText(activity, "Uploaded", Toast.LENGTH_SHORT).show();
 
         addUserChangeListener();
     }
@@ -374,9 +620,14 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
-            Toast.makeText(this, "Media captured."+data.getStringExtra(AnncaConfiguration.Arguments.FILE_PATH), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Media captured."+data.getStringExtra(AnncaConfiguration.Arguments.FILE_PATH), Toast.LENGTH_SHORT).show();
        //     uploadFromUri(Uri.parse(data.getStringExtra(AnncaConfiguration.Arguments.FILE_PATH)));
-            uploadFromUri(Uri.fromFile(new File(data.getStringExtra(AnncaConfiguration.Arguments.FILE_PATH))));
+            uri = Uri.fromFile(new File(data.getStringExtra(AnncaConfiguration.Arguments.FILE_PATH)));
+            registerForContextMenu(view);
+            openContextMenu(view);
+            unregisterForContextMenu(view);
+
+           //
         }
     }
 
@@ -388,9 +639,9 @@ public class MainActivity extends AppCompatActivity {
                 .setAction(MyUploadService.ACTION_UPLOAD));
 
         // Show loading spinner
-        showProgressDialog(getString(R.string.progress_uploading));
+        //showProgressDialog(getString(R.string.progress_uploading));
     }
-    private void showProgressDialog(String caption) {
+   /* private void showProgressDialog(String caption) {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setIndeterminate(true);
@@ -404,12 +655,71 @@ public class MainActivity extends AppCompatActivity {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
-    }
+    }*/
 
     private void onUploadResultIntent(Intent intent) {
 
         textView.setVisibility(View.GONE);
         textView.setText(""+intent.getParcelableExtra(MyUploadService.EXTRA_DOWNLOAD_URL));
+        Toast.makeText(activity, "AAA", Toast.LENGTH_SHORT).show();
+        String vPath  = textView.getText().toString();
+        try {
+            Bitmap b  = retriveVideoFrameFromVideo(vPath);
+            if(b!=null){
+                base64Thumnail = toBase64(b);
+            }
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        loadDataInFirebase(vPath);
 
+    }
+
+    @Override
+    public void onControlsVisibilityChange(boolean value) {
+
+    }
+
+
+    public String toBase64(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream .toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+
+
+
+    public Bitmap retriveVideoFrameFromVideo(String videoPath)
+            throws Throwable
+    {
+        Bitmap bitmap = null;
+        MediaMetadataRetriever mediaMetadataRetriever = null;
+        try
+        {
+            mediaMetadataRetriever = new MediaMetadataRetriever();
+            if (Build.VERSION.SDK_INT >= 14)
+                mediaMetadataRetriever.setDataSource(videoPath, new HashMap<String, String>());
+            else
+                mediaMetadataRetriever.setDataSource(videoPath);
+            //   mediaMetadataRetriever.setDataSource(videoPath);
+            bitmap = mediaMetadataRetriever.getFrameAtTime();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new Throwable(
+                    "Exception in retriveVideoFrameFromVideo(String videoPath)"
+                            + e.getMessage());
+
+        }
+        finally
+        {
+            if (mediaMetadataRetriever != null)
+            {
+                mediaMetadataRetriever.release();
+            }
+        }
+        return bitmap;
     }
 }

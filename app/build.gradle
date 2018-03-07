@@ -9,6 +9,7 @@ ext {
     TARGET_SDK = 24
     MIN_SDK = 16
     BUILD_TOOLS = "26.0.2"
+
 }
 
 android {
@@ -16,6 +17,7 @@ android {
     buildToolsVersion BUILD_TOOLS
 
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         applicationId "io.github.memfis19.sample"
         minSdkVersion MIN_SDK
         targetSdkVersion TARGET_SDK
@@ -40,6 +42,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile "com.android.support:appcompat-v7:25.3.1"
+    compile 'com.android.support:design:25.3.1'
     compile 'com.writingminds:FFmpegAndroid:0.3.2'
     compile 'com.google.firebase:firebase-auth:11.8.0'
     compile 'com.google.firebase:firebase-storage:11.8.0'

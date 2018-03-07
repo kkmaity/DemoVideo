@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_margin="10dp"
-    android:layout_height="wrap_content">
-    <VideoView
+    android:layout_margin="1dp"
+    android:layout_height="150dp">
+    <!--<VideoView
         android:id="@+id/video_preview"
-        android:layout_width="170dp"
+        android:layout_width="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
         android:layout_centerInParent="true"
-        android:layout_height="150dp"/>
+        android:layout_height="150dp"/>-->
+    <com.malmstein.fenster.view.FensterVideoView
+        android:id="@+id/play_video_texture"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        android:fitsSystemWindows="true" />
+  <!--  <com.malmstein.fenster.controller.MediaFensterPlayerController
+        android:id="@+id/fen__play_video_controller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true" />
+    <com.malmstein.fenster.view.FensterLoadingView
+        android:id="@+id/fen__play_video_loading"
+        android:layout_width="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_height="match_parent" />-->
     <ImageView
         android:id="@+id/ivThumb"
         android:layout_width="match_parent"
@@ -15,5 +36,55 @@
         android:scaleType="centerCrop"
         android:src="@drawable/thumb"
         />
+    <ImageView
+        android:id="@+id/ivPlay"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="centerCrop"
+        android:layout_centerInParent="true"
+        android:src="@drawable/play_icon"
+        />
+
+    <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/videoPlayerWithAdPlayback"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="match_parent">
+        <com.malmstein.fenster.view.FensterVideoView
+            android:id="@+id/fen__play_video_texture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:keepScreenOn="true"
+            android:layout_centerInParent="true"
+            android:fitsSystemWindows="true" />
+
+        <com.malmstein.fenster.controller.MediaFensterPlayerController
+            android:id="@+id/fen__play_video_controller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_alignParentBottom="true" />
+
+        <com.malmstein.fenster.view.FensterLoadingView
+            android:id="@+id/fen__play_video_loading"
+            android:layout_width="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_height="match_parent" />
+        <ImageView
+            android:id="@+id/ivExitFullScreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/ic_fullscreen_exit_black_24dp"/>
+        <ImageView
+            android:visibility="visible"
+            android:id="@+id/ivThumb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/place_holder_img"/>
+    </RelativeLayout>-->
+
 
 </RelativeLayout>
