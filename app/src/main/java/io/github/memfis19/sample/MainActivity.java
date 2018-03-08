@@ -10,9 +10,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -22,6 +24,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -85,12 +88,16 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
     private TextView txt;
     private View view;
     private Uri uri;
-    private MoviesAdapterA moviesAdapterA,moviesAdapterB,moviesAdapterC,moviesAdapterD;
-    RecyclerView rvA;
-    RecyclerView rvB;
-    RecyclerView rvC ;
-    RecyclerView rvD;
-    private TextView noA,noB,noC,noD;
+    private TextView eventA;
+    private TextView eventB;
+    private TextView eventC;
+    private TextView eventD;
+    //private MoviesAdapterA moviesAdapterA,moviesAdapterB,moviesAdapterC,moviesAdapterD;
+   // RecyclerView rvA;
+   // RecyclerView rvB;
+    //RecyclerView rvC ;
+   // RecyclerView rvD;
+   // private TextView noA,noB,noC,noD;
 
 
 
@@ -108,23 +115,84 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
     List<VideoData> typeC=new ArrayList<>();
     List<VideoData> typeD=new ArrayList<>();
     private  List<VideoData> list = new ArrayList<VideoData>();;
+    ArrayList<MyModel> videoData = new ArrayList<>();
+    private String thumnailPath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main_layout);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("A DEMO APPLICATION");
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mFirebaseInstance = FirebaseDatabase.getInstance();
         textView = (TextView) findViewById(R.id.picture_download_uri);
-        noA = (TextView) findViewById(R.id.noA);
+        eventA = (TextView) findViewById(R.id.eventA);
+        eventB = (TextView) findViewById(R.id.eventB);
+        eventC = (TextView) findViewById(R.id.eventC);
+        eventD = (TextView) findViewById(R.id.eventD);
+        eventA.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                videoData.clear();
+                for(int i = 0; i<typeA.size(); i++){
+                    videoData.add(new MyModel(typeA.get(i).getLink(),typeA.get(i).getThumnail(), "A sample uploaded video"));
+                    videoData.add(new MyModel(typeA.get(i).getLink(),typeA.get(i).getThumnail(), ""));
+                }
+
+                Constant.myModels = videoData;
+                startActivity(new Intent(getApplicationContext(), VideoViewActivity.class));
+            }
+        });
+        eventB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                videoData.clear();
+                for(int i = 0; i<typeB.size(); i++){
+                    videoData.add(new MyModel(typeB.get(i).getLink(),typeB.get(i).getThumnail(), "A sample uploaded video"));
+                    videoData.add(new MyModel(typeB.get(i).getLink(),typeB.get(i).getThumnail(), ""));
+                }
+
+                Constant.myModels = videoData;
+                startActivity(new Intent(getApplicationContext(), VideoViewActivity.class));
+            }
+        });
+        eventC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                videoData.clear();
+                for(int i = 0; i<typeC.size(); i++){
+                    videoData.add(new MyModel(typeC.get(i).getLink(),typeC.get(i).getThumnail(), "A sample uploaded video"));
+                    videoData.add(new MyModel(typeC.get(i).getLink(),typeC.get(i).getThumnail(), ""));
+                }
+
+                Constant.myModels = videoData;
+                startActivity(new Intent(getApplicationContext(), VideoViewActivity.class));
+            }
+        });
+        eventD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                videoData.clear();
+                for(int i = 0; i<typeD.size(); i++){
+                    videoData.add(new MyModel(typeD.get(i).getLink(),typeD.get(i).getThumnail(), "A sample uploaded video"));
+                    videoData.add(new MyModel(typeD.get(i).getLink(),typeD.get(i).getThumnail(), ""));
+                }
+
+                Constant.myModels = videoData;
+                startActivity(new Intent(getApplicationContext(), VideoViewActivity.class));
+            }
+        });
+       /* noA = (TextView) findViewById(R.id.noA);
         noB = (TextView) findViewById(R.id.noB);
         noC = (TextView) findViewById(R.id.noC);
         noD = (TextView) findViewById(R.id.noD);
         noA.setVisibility(View.GONE);
         noB.setVisibility(View.GONE);
         noC.setVisibility(View.GONE);
-        noD.setVisibility(View.GONE);
+        noD.setVisibility(View.GONE);*/
         progressbar = (ProgressBar) findViewById(R.id.progressbar);
         ll_main = (LinearLayout) findViewById(R.id.ll_main);
         view = ll_main;
@@ -135,11 +203,11 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(onClickListener);
         textView.setVisibility(View.GONE);
-         rvA = (RecyclerView) findViewById(R.id.rvA);
+        /* rvA = (RecyclerView) findViewById(R.id.rvA);
          rvB = (RecyclerView) findViewById(R.id.rvB);
          rvC = (RecyclerView) findViewById(R.id.rvC);
-         rvD = (RecyclerView) findViewById(R.id.rvD);
-        GridLayoutManager managerA = new GridLayoutManager(this,2, LinearLayoutManager.VERTICAL, false);
+         rvD = (RecyclerView) findViewById(R.id.rvD);*/
+       /* GridLayoutManager managerA = new GridLayoutManager(this,2, LinearLayoutManager.VERTICAL, false);
         GridLayoutManager managerB = new GridLayoutManager(this,2, LinearLayoutManager.VERTICAL, false);
         GridLayoutManager managerC = new GridLayoutManager(this,2, LinearLayoutManager.VERTICAL, false);
         GridLayoutManager managerD = new GridLayoutManager(this,2, LinearLayoutManager.VERTICAL, false);
@@ -169,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
         rvB.setAdapter(moviesAdapterB);
         rvC.setAdapter(moviesAdapterC);
         rvD.setAdapter(moviesAdapterD);
-
+*/
         activity = this;
 
         if (Build.VERSION.SDK_INT > 15) {
@@ -233,7 +301,10 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
                     }
                 }
 
-                if(list.size() == 0){
+
+
+
+                /*if(list.size() == 0){
                     txt.setVisibility(View.VISIBLE);
                     ll_main.setVisibility(View.GONE);
                 }else{
@@ -263,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
                     }else{
                         noD.setVisibility(View.VISIBLE);
                     }
-                }
+                }*/
                 init();
 
                 System.out.println("!!!!!!!!!kk!!!!!!"+list.size());
@@ -282,10 +353,11 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
     }
 
     private void init() {
-        moviesAdapterA.notifyDataSetChanged();
+        ll_main.setVisibility(View.VISIBLE);
+      /*  moviesAdapterA.notifyDataSetChanged();
         moviesAdapterB.notifyDataSetChanged();
         moviesAdapterC.notifyDataSetChanged();
-        moviesAdapterD.notifyDataSetChanged();
+        moviesAdapterD.notifyDataSetChanged();*/
        /* RecyclerView rvA = (RecyclerView) findViewById(R.id.rvA);
         RecyclerView rvB = (RecyclerView) findViewById(R.id.rvB);
         RecyclerView rvC = (RecyclerView) findViewById(R.id.rvC);
@@ -297,10 +369,10 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
 
 
 
-        rvA.setAdapter(new MoviesAdapterA(this,typeA));
+       /* rvA.setAdapter(new MoviesAdapterA(this,typeA));
         rvB.setAdapter(new MoviesAdapterA(this,typeB));
         rvC.setAdapter(new MoviesAdapterA(this,typeC));
-        rvD.setAdapter(new MoviesAdapterA(this,typeD));
+        rvD.setAdapter(new MoviesAdapterA(this,typeD));*/
         progressbar.setVisibility(View.GONE);
       //  ll_main.setVisibility(View.VISIBLE);
 
@@ -622,6 +694,7 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
         if (requestCode == CAPTURE_MEDIA && resultCode == RESULT_OK) {
             //Toast.makeText(this, "Media captured."+data.getStringExtra(AnncaConfiguration.Arguments.FILE_PATH), Toast.LENGTH_SHORT).show();
        //     uploadFromUri(Uri.parse(data.getStringExtra(AnncaConfiguration.Arguments.FILE_PATH)));
+            thumnailPath = data.getStringExtra(AnncaConfiguration.Arguments.FILE_PATH);
             uri = Uri.fromFile(new File(data.getStringExtra(AnncaConfiguration.Arguments.FILE_PATH)));
             registerForContextMenu(view);
             openContextMenu(view);
@@ -661,10 +734,11 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
 
         textView.setVisibility(View.GONE);
         textView.setText(""+intent.getParcelableExtra(MyUploadService.EXTRA_DOWNLOAD_URL));
-        Toast.makeText(activity, "AAA", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(activity, "AAA", Toast.LENGTH_SHORT).show();
         String vPath  = textView.getText().toString();
         try {
-            Bitmap b  = retriveVideoFrameFromVideo(vPath);
+           // Bitmap b  = retriveVideoFrameFromVideo(vPath);
+            Bitmap b  = createThumbnailFromPath(thumnailPath, MediaStore.Images.Thumbnails.MINI_KIND);
             if(b!=null){
                 base64Thumnail = toBase64(b);
             }
@@ -690,7 +764,7 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
 
 
 
-    public Bitmap retriveVideoFrameFromVideo(String videoPath)
+   /* public Bitmap retriveVideoFrameFromVideo(String videoPath)
             throws Throwable
     {
         Bitmap bitmap = null;
@@ -721,5 +795,9 @@ public class MainActivity extends AppCompatActivity implements FensterPlayerCont
             }
         }
         return bitmap;
+    }*/
+
+    public Bitmap createThumbnailFromPath(String filePath, int type){
+        return ThumbnailUtils.createVideoThumbnail(filePath, type);
     }
 }

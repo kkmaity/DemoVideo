@@ -1,1 +1,1 @@
-include ':app', ':annca'
+include ':app', ':annca', ':autoplayvideos'

@@ -12,12 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.VideoView;
-
-import com.universalvideoview.UniversalMediaController;
-import com.universalvideoview.UniversalVideoView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,22 +23,19 @@ import io.github.memfis19.sample.R;
  * Created by kamal on 03/06/2018.
  */
 
-public class MoviesAdapterA extends RecyclerView.Adapter<MoviesAdapterA.MyViewHolder> {
+public class MoviesAdapterAB extends RecyclerView.Adapter<MoviesAdapterAB.MyViewHolder> {
 
 private List<VideoData> moviesList;
     private  Context mContext;
 
 public class MyViewHolder extends RecyclerView.ViewHolder {
-    public UniversalVideoView mVideoView;
-    public UniversalMediaController mMediaController;
+    public VideoView video_preview;
     public ImageView ivThumb;
     public ImageView ivPlay;
 
     public MyViewHolder(View view) {
         super(view);
-        mVideoView = (UniversalVideoView) view.findViewById(R.id.videoView);
-        mMediaController = (UniversalMediaController) view.findViewById(R.id.media_controller);
-        mVideoView.setMediaController(mMediaController);
+        video_preview = (VideoView) view.findViewById(R.id.video_preview);
         ivThumb = (ImageView) view.findViewById(R.id.ivThumb);
         ivPlay = (ImageView) view.findViewById(R.id.ivPlay);
 
@@ -51,7 +43,7 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
 }
 
 
-    public MoviesAdapterA(Context context,List<VideoData> moviesList) {
+    public MoviesAdapterAB(Context context, List<VideoData> moviesList) {
         this.moviesList = moviesList;
         this.mContext=context;
     }
@@ -76,16 +68,11 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
         @Override
         public void onClick(View v) {
             v.setVisibility(View.GONE);
-            RelativeLayout rl = (RelativeLayout) v.getParent();
-            ImageView imageView = (ImageView)rl.findViewById(R.id.ivPlay) ;
-            imageView.setVisibility(View.GONE);
-            View view1 = View.inflate(mContext,R.layout.loading,null);
-            holder.mMediaController.setOnLoadingView(view1);
             Uri uri=Uri.parse(moviesList.get(position).getLink());
 
 
-            holder.mVideoView.setVideoURI(uri);
-            holder.mVideoView.start();
+            holder.video_preview.setVideoURI(uri);
+            holder.video_preview.start();
 
         }
     });

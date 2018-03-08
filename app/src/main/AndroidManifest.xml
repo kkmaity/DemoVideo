@@ -46,6 +46,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/ThemeFullscreen" />
         <activity
+            android:name=".VideoViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ThemeFullscreen" />
+        <activity
             android:name=".SquareCameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThemeFullscreen" />
